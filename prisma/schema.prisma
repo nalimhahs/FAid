@@ -18,7 +18,7 @@ model Condition {
   treatment   Treatment @relation(fields: [treatmentId], references: [id])
   image       String?
   treatmentId Int       @unique
-  catagory    Catagory
+  category    Category
 }
 
 model Treatment {
