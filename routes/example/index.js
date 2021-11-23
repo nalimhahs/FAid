@@ -2,6 +2,7 @@
 
 module.exports = async function (fastify, opts) {
   fastify.get('/', async function (request, reply) {
-    return 'this is an example'
+    let a = 10 + 10
+    return a
   })
 }

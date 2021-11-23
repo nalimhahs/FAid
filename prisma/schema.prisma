@@ -18,6 +18,7 @@ model Condition {
   treatment   Treatment @relation(fields: [treatmentId], references: [id])
   image       String?
   treatmentId Int       @unique
+  catagory    Catagory
 }
 
 model Treatment {
@@ -43,4 +44,10 @@ enum Severity {
   POLICE
   MEDICAL
   BOTH
+}
+
+enum Catagory {
+  CHOKING
+  BURNS
+  
 }
