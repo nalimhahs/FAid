@@ -10,8 +10,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+model Condition {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  symptoms    Symptom[]
+  treatment   Treatment @relation(fields: [treatmentId], references: [id])
+  image       String?
+  treatmentId Int       @unique
+}
+
+model Treatment {
+  id          Int        @id @default(autoincrement())
+  condition   Condition?
+  name        String
+  description String
+  image       String?
+}
+
+model Symptom {
+  id          Int        @id @default(autoincrement())
+  condition   Condition? @relation(fields: [id], references: [id])
+  name        String
+  description String
+  image       String?
+  severity    Severity
+  priority    Int
+  question    String
+}
+
+enum Severity {
+  POLICE
+  MEDICAL
+  BOTH
 }
