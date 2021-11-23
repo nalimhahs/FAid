@@ -11,7 +11,16 @@ module.exports = async function (fastify, opts) {
 
     return category;
   });
-  fastify.get("/sa", async function (request, reply) {
-    return "sad";
+  fastify.get("/:cat", async function (request, reply) {
+    try {
+      const getCondition = await fastify.prisma.condition.findMany({
+        where: {
+          category: request.params.cat,
+        },
+      });
+      return getCondition;
+    } catch (err) {
+      return "Invalid Category";
+    }
   });
 };
