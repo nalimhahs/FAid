@@ -46,7 +46,7 @@ enum Severity {
   BOTH
 }
 
-enum Catagory {
+enum Category {
   CHOKING
   BURNS
   
