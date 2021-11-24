@@ -7,12 +7,13 @@ module.exports = async function (fastify, opts) {
             const session = await fastify.prisma.session.create({
                 data: {
                     location: location,
-                    timestamp: new Date()
+                    timestamp: new Date(),
                 }
             })
             reply.send({ 'session_id': session.id })
 
         } catch (error) {
+            console.error(error)
             reply.send({ 'error': 'Unable to create session' })
         }
     })

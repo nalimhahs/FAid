@@ -9,30 +9,31 @@ module.exports = async function (fastify, opts) {
 
             const session = await fastify.prisma.session.findUnique({
                 where: {
-                    id: sessionId
+                    id: parseInt(sessionId, 10)
                 }
             })
 
             const symptom = await fastify.prisma.symptom.findUnique({
                 where: {
-                    id: symptomId
+                    id: parseInt(symptomId, 10)
                 }
             })
 
-            console.log(session.symptoms)
+            console.log(session.symptoms, session, symptom)
 
             const updatedSession = await fastify.prisma.session.update({
                 where: {
-                    id: sessionId
+                    id: parseInt(sessionId, 10)
                 },
                 data: {
-                    symptoms: [...session.symptoms, symptom]
+                    symptoms:  symptom
                 }
             })
 
             reply.send({ 'session_id': session.id })
 
         } catch (error) {
+            console.error(error)
             reply.send({ 'error': 'Invalid Severity' })
         }
     })
