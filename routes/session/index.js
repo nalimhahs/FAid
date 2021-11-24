@@ -6,7 +6,8 @@ module.exports = async function (fastify, opts) {
             const location = request.query.location
             const session = await fastify.prisma.session.create({
                 data: {
-                    location: location
+                    location: location,
+                    timestamp: new Date()
                 }
             })
             reply.send({ 'session_id': session.id })

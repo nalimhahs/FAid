@@ -46,6 +46,7 @@ model Session {
   id       Int       @id @default(autoincrement())
   location String?
   symptoms Symptom[] 
+  timestamp DateTime
 }
 
 enum Severity {
