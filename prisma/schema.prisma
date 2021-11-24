@@ -38,6 +38,14 @@ model Symptom {
   severity    Severity
   priority    Int
   question    String
+  Session     Session?   @relation(fields: [sessionId], references: [id])
+  sessionId   Int?
+}
+
+model Session {
+  id       Int       @id @default(autoincrement())
+  location String?
+  symptoms Symptom[] 
 }
 
 enum Severity {
