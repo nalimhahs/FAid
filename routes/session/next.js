@@ -71,16 +71,25 @@ module.exports = async function (fastify, opts) {
               await fastify.prisma.condition.findMany({
                 include: { symptoms: true, treatment: true },
               });
+            const sessionAgain = await fastify.prisma.session.findUnique({
+              where: {
+                id: parseInt(sessionId, 10),
+              },
+              include: {
+                symptoms: true,
+              },
+            });
             console.log(conditionWithSymptom);
             var min = conditionWithSymptom[0];
             console.log(conditionWithSymptom[0].symptoms[0].id);
             var minLength =
-              conditionWithSymptom[0].symptoms.length > session.symptoms.length
+              conditionWithSymptom[0].symptoms.length >
+              sessionAgain.symptoms.length
                 ? conditionWithSymptom[0].symptoms.filter(
                     ({ id: id1 }) =>
-                      !session.symptoms.some(({ id: id2 }) => id2 === id1)
+                      !sessionAgain.symptoms.some(({ id: id2 }) => id2 === id1)
                   )
-                : session.symptoms.filter(
+                : sessionAgain.symptoms.filter(
                     ({ id: id1 }) =>
                       !conditionWithSymptom[0].symptoms.some(
                         ({ id: id2 }) => id2 === id1
@@ -88,12 +97,14 @@ module.exports = async function (fastify, opts) {
                   );
             conditionWithSymptom.map(async (item) => {
               var results =
-                item.symptoms.length > session.symptoms.length
+                item.symptoms.length > sessionAgain.symptoms.length
                   ? item.symptoms.filter(
                       ({ id: id1 }) =>
-                        !session.symptoms.some(({ id: id2 }) => id2 === id1)
+                        !sessionAgain.symptoms.some(
+                          ({ id: id2 }) => id2 === id1
+                        )
                     )
-                  : session.symptoms.filter(
+                  : sessionAgain.symptoms.filter(
                       ({ id: id1 }) =>
                         !item.symptoms.some(({ id: id2 }) => id2 === id1)
                     );
@@ -102,8 +113,7 @@ module.exports = async function (fastify, opts) {
                 min = item;
               }
             });
-            console.log("hi");
-            console.log(min);
+
             reply.send({ session_id: session.id, treatment: min.treatment });
           } else {
             newSymptoms.sort((a, b) => {
