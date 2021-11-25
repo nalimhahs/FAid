@@ -15,7 +15,7 @@ module.exports = async function (fastify, opts) {
           priority: "asc",
         },
       });
-      reply.send({ session_id: session.id, question: firstQuestion[0] });
+      reply.send({ session_id: session.id, symptom: firstQuestion[0] });
     } catch (error) {
       console.error(error);
       reply.send({ error: "Unable to create session" });
