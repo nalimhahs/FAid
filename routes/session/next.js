@@ -173,11 +173,17 @@ module.exports = async function (fastify, opts) {
         where: {
           id: parseInt(sessionId, 10),
         },
+        include: {
+          symptoms: true,
+        },
       });
 
       const symptom = await fastify.prisma.symptom.findUnique({
         where: {
           id: parseInt(symptomId, 10),
+        },
+        include: {
+          condition: true,
         },
       });
 
