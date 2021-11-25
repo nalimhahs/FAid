@@ -34,7 +34,8 @@ module.exports = async function (fastify, opts) {
         });
       }
 
-      if (answer) {
+      if (answer === "1") {
+        console.log("12");
         const updatedSession = await fastify.prisma.session.update({
           where: {
             id: parseInt(sessionId, 10),
@@ -63,55 +64,63 @@ module.exports = async function (fastify, opts) {
           });
           console.log(newSymptoms.length + "22");
         });
-        console.log(newSymptoms.length + "233");
-        if (newSymptoms.length == 0) {
-          const conditionWithSymptom = await fastify.prisma.condition.findMany({
-            include: { symptoms: true, treatment: true },
-          });
-          console.log(conditionWithSymptom);
-          var min = conditionWithSymptom[0];
-          console.log(conditionWithSymptom[0].symptoms[0].id);
-          var minLength =
-            conditionWithSymptom[0].symptoms.length > session.symptoms.length
-              ? conditionWithSymptom[0].symptoms.filter(
-                  ({ id: id1 }) =>
-                    !session.symptoms.some(({ id: id2 }) => id2 === id1)
-                )
-              : session.symptoms.filter(
-                  ({ id: id1 }) =>
-                    !conditionWithSymptom[0].symptoms.some(
-                      ({ id: id2 }) => id2 === id1
-                    )
-                );
-          conditionWithSymptom.map(async (item) => {
-            var results =
-              item.symptoms.length > session.symptoms.length
-                ? item.symptoms.filter(
+
+        setTimeout(async () => {
+          console.log(newSymptoms.length + "233");
+
+          if (newSymptoms.length == 0) {
+            const conditionWithSymptom =
+              await fastify.prisma.condition.findMany({
+                include: { symptoms: true, treatment: true },
+              });
+            console.log(conditionWithSymptom);
+            var min = conditionWithSymptom[0];
+            console.log(conditionWithSymptom[0].symptoms[0].id);
+            var minLength =
+              conditionWithSymptom[0].symptoms.length > session.symptoms.length
+                ? conditionWithSymptom[0].symptoms.filter(
                     ({ id: id1 }) =>
                       !session.symptoms.some(({ id: id2 }) => id2 === id1)
                   )
                 : session.symptoms.filter(
                     ({ id: id1 }) =>
-                      !item.symptoms.some(({ id: id2 }) => id2 === id1)
+                      !conditionWithSymptom[0].symptoms.some(
+                        ({ id: id2 }) => id2 === id1
+                      )
                   );
-            if (results.length < minLength.length) {
-              minLength = results;
-              min = item;
-            }
-          });
-          reply.send({ session_id: session.id, treatment: min.treatment });
-        } else {
-          newSymptoms.sort((a, b) => {
-            return a.priority - b.priority;
-          });
-          question = newSymptoms[0];
-        }
+            conditionWithSymptom.map(async (item) => {
+              var results =
+                item.symptoms.length > session.symptoms.length
+                  ? item.symptoms.filter(
+                      ({ id: id1 }) =>
+                        !session.symptoms.some(({ id: id2 }) => id2 === id1)
+                    )
+                  : session.symptoms.filter(
+                      ({ id: id1 }) =>
+                        !item.symptoms.some(({ id: id2 }) => id2 === id1)
+                    );
+              if (results.length < minLength.length) {
+                minLength = results;
+                min = item;
+              }
+            });
+            console.log("hi");
+
+            reply.send({ session_id: session.id, treatment: min.treatment });
+          } else {
+            newSymptoms.sort((a, b) => {
+              return a.priority - b.priority;
+            });
+            question = newSymptoms[0];
+          }
+        }, 300);
       } else {
         const conditions = await fastify.prisma.symptom.findMany({
           where: { id: session.symptoms[session.symptoms.length - 1].id },
           select: { condition: true },
         });
         var newSymptoms = [];
+
         conditions.map(async (item) => {
           const symptomsInConditions = await fastify.prisma.condition.findMany({
             where: { id: item.condition.id },
@@ -126,52 +135,67 @@ module.exports = async function (fastify, opts) {
             });
           });
         });
-        if (newSymptoms.length == 0) {
-          const conditionWithSymptom = await fastify.prisma.condition.findMany({
-            include: { symptoms: true, treatment: true },
-          });
-          console.log(conditionWithSymptom);
-          var min = conditionWithSymptom[0];
-          console.log(conditionWithSymptom[0].symptoms[0].id);
-          console.log(symptoms);
-          var minLength =
-            conditionWithSymptom[0].symptoms.length > session.symptoms.length
-              ? conditionWithSymptom[0].symptoms.filter(
-                  ({ id: id1 }) =>
-                    !session.symptoms.some(({ id: id2 }) => id2 === id1)
-                )
-              : session.symptoms.filter(
-                  ({ id: id1 }) =>
-                    !conditionWithSymptom[0].symptoms.some(
-                      ({ id: id2 }) => id2 === id1
-                    )
-                );
-          conditionWithSymptom.map(async (item) => {
-            var results =
-              item.symptoms.length > session.symptoms.length
-                ? item.symptoms.filter(
-                    ({ id: id1 }) =>
-                      !session.symptoms.some(({ id: id2 }) => id2 === id1)
-                  )
-                : session.symptoms.filter(
-                    ({ id: id1 }) =>
-                      !item.symptoms.some(({ id: id2 }) => id2 === id1)
-                  );
-            if (results.length < minLength.length) {
-              minLength = results;
-              min = item;
-            }
-          });
-          reply.send({ session_id: session.id, treatment: min.treatment });
-        } else {
+        setTimeout(async () => {
+          console.log(newSymptoms);
           newSymptoms.sort((a, b) => {
             return a.priority - b.priority;
           });
-          question = newSymptoms[0];
-        }
+          newSymptoms.map(async (item, index) => {
+            if (parseInt(item.id) == parseInt(symptom.id)) {
+              if (index != newSymptoms.length - 1) {
+                console.log(item);
+                question = newSymptoms[index + 1];
+              } else {
+                const conditionWithSymptom =
+                  await fastify.prisma.condition.findMany({
+                    include: { symptoms: true, treatment: true },
+                  });
+                console.log(conditionWithSymptom);
+                var min = conditionWithSymptom[0];
+                console.log(conditionWithSymptom[0].symptoms[0].id);
+                console.log(symptoms);
+                var minLength =
+                  conditionWithSymptom[0].symptoms.length > symptoms.length
+                    ? conditionWithSymptom[0].symptoms.filter(
+                        ({ id: id1 }) =>
+                          !symptoms.some(({ id: id2 }) => id2 === id1)
+                      )
+                    : symptoms.filter(
+                        ({ id: id1 }) =>
+                          !conditionWithSymptom[0].symptoms.some(
+                            ({ id: id2 }) => id2 === id1
+                          )
+                      );
+                conditionWithSymptom.map(async (item) => {
+                  var results =
+                    item.symptoms.length > symptoms.length
+                      ? item.symptoms.filter(
+                          ({ id: id1 }) =>
+                            !symptoms.some(({ id: id2 }) => id2 === id1)
+                        )
+                      : symptoms.filter(
+                          ({ id: id1 }) =>
+                            !item.symptoms.some(({ id: id2 }) => id2 === id1)
+                        );
+                  if (results.length < minLength.length) {
+                    minLength = results;
+                    min = item;
+                  }
+                });
+                console.log(min);
+                reply.send({
+                  session_id: session.id,
+                  treatment: min.treatment,
+                });
+              }
+            }
+          });
+        }, 600);
       }
 
-      reply.send({ session_id: session.id, symptom: question });
+      setTimeout(() => {
+        reply.send({ session_id: session.id, symptom: question });
+      }, 1000);
     } catch (error) {
       console.error(error);
       reply.send({ error: "Invalid Severity" });
