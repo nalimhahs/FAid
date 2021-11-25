@@ -35,7 +35,6 @@ module.exports = async function (fastify, opts) {
       }
 
       if (answer === "1") {
-        console.log("12");
         const updatedSession = await fastify.prisma.session.update({
           where: {
             id: parseInt(sessionId, 10),
@@ -57,12 +56,11 @@ module.exports = async function (fastify, opts) {
 
           symptomsInConditions.map((item) => {
             item.symptoms.map((indi) => {
-              if (!symptomExists(indi.id)) {
+              if (!symptomExists(indi.id) && indi.id != symptom.id) {
                 newSymptoms.push(indi);
               }
             });
           });
-          console.log(newSymptoms.length + "22");
         });
 
         setTimeout(async () => {
@@ -105,7 +103,7 @@ module.exports = async function (fastify, opts) {
               }
             });
             console.log("hi");
-
+            console.log(min);
             reply.send({ session_id: session.id, treatment: min.treatment });
           } else {
             newSymptoms.sort((a, b) => {
@@ -113,7 +111,7 @@ module.exports = async function (fastify, opts) {
             });
             question = newSymptoms[0];
           }
-        }, 300);
+        }, 800);
       } else {
         if (symptoms.length === 0) {
           const firstQuestion = await fastify.prisma.symptom.findMany({
@@ -208,7 +206,9 @@ module.exports = async function (fastify, opts) {
       }
 
       setTimeout(() => {
-        reply.send({ session_id: session.id, symptom: question });
+        if (question != null) {
+          reply.send({ session_id: session.id, symptom: question });
+        }
       }, 1000);
     } catch (error) {
       console.error(error);
