@@ -26,6 +26,7 @@ module.exports = async function (fastify, opts) {
       });
 
       let question = null;
+      const symptoms = session.symptoms;
 
       function symptomExists(id) {
         return session.symptoms.some(function (el) {
@@ -49,7 +50,7 @@ module.exports = async function (fastify, opts) {
         var newSymptoms = [];
         conditions.map(async (item) => {
           const symptomsInConditions = await fastify.prisma.condition.findMany({
-            where: { id: item.condition.id },
+            where: { id: item.id },
             select: { symptoms: true },
           });
 
@@ -68,13 +69,12 @@ module.exports = async function (fastify, opts) {
           console.log(conditionWithSymptom);
           var min = conditionWithSymptom[0];
           console.log(conditionWithSymptom[0].symptoms[0].id);
-          console.log(symptoms);
           var minLength =
-            conditionWithSymptom[0].symptoms.length > symptoms.length
+            conditionWithSymptom[0].symptoms.length > session.symptoms.length
               ? conditionWithSymptom[0].symptoms.filter(
-                ({ id: id1 }) => !symptoms.some(({ id: id2 }) => id2 === id1)
+                ({ id: id1 }) => !session.symptoms.some(({ id: id2 }) => id2 === id1)
               )
-              : symptoms.filter(
+              : session.symptoms.filter(
                 ({ id: id1 }) =>
                   !conditionWithSymptom[0].symptoms.some(
                     ({ id: id2 }) => id2 === id1
@@ -82,12 +82,12 @@ module.exports = async function (fastify, opts) {
               );
           conditionWithSymptom.map(async (item) => {
             var results =
-              item.symptoms.length > symptoms.length
+              item.symptoms.length > session.symptoms.length
                 ? item.symptoms.filter(
                   ({ id: id1 }) =>
-                    !symptoms.some(({ id: id2 }) => id2 === id1)
+                    !session.symptoms.some(({ id: id2 }) => id2 === id1)
                 )
-                : symptoms.filter(
+                : session.symptoms.filter(
                   ({ id: id1 }) =>
                     !item.symptoms.some(({ id: id2 }) => id2 === id1)
                 );
@@ -106,7 +106,7 @@ module.exports = async function (fastify, opts) {
 
       } else {
         const conditions = await fastify.prisma.symptom.findMany({
-          where: { id: symptoms[symptoms.length - 1].id },
+          where: { id: session.symptoms[session.symptoms.length - 1].id },
           select: { condition: true },
         });
         var newSymptoms = [];
@@ -133,11 +133,11 @@ module.exports = async function (fastify, opts) {
           console.log(conditionWithSymptom[0].symptoms[0].id);
           console.log(symptoms);
           var minLength =
-            conditionWithSymptom[0].symptoms.length > symptoms.length
+            conditionWithSymptom[0].symptoms.length > session.symptoms.length
               ? conditionWithSymptom[0].symptoms.filter(
-                ({ id: id1 }) => !symptoms.some(({ id: id2 }) => id2 === id1)
+                ({ id: id1 }) => !session.symptoms.some(({ id: id2 }) => id2 === id1)
               )
-              : symptoms.filter(
+              : session.symptoms.filter(
                 ({ id: id1 }) =>
                   !conditionWithSymptom[0].symptoms.some(
                     ({ id: id2 }) => id2 === id1
@@ -145,12 +145,12 @@ module.exports = async function (fastify, opts) {
               );
           conditionWithSymptom.map(async (item) => {
             var results =
-              item.symptoms.length > symptoms.length
+              item.symptoms.length > session.symptoms.length
                 ? item.symptoms.filter(
                   ({ id: id1 }) =>
-                    !symptoms.some(({ id: id2 }) => id2 === id1)
+                    !session.symptoms.some(({ id: id2 }) => id2 === id1)
                 )
-                : symptoms.filter(
+                : session.symptoms.filter(
                   ({ id: id1 }) =>
                     !item.symptoms.some(({ id: id2 }) => id2 === id1)
                 );
