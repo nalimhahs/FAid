@@ -15,7 +15,7 @@ module.exports = async function (fastify, opts) {
           symptoms: true,
         },
       });
-
+      var newSymptoms = [];
       const symptom = await fastify.prisma.symptom.findUnique({
         where: {
           id: parseInt(symptomId, 10),
@@ -41,13 +41,13 @@ module.exports = async function (fastify, opts) {
           },
           data: {
             symptoms: {
-              connect: { id: symptom.id }
-            }
+              connect: { id: symptom.id },
+            },
           },
         });
 
-        const conditions = symptom.condition
-        var newSymptoms = [];
+        const conditions = symptom.condition;
+
         conditions.map(async (item) => {
           const symptomsInConditions = await fastify.prisma.condition.findMany({
             where: { id: item.id },
@@ -61,7 +61,9 @@ module.exports = async function (fastify, opts) {
               }
             });
           });
+          console.log(newSymptoms.length + "22");
         });
+        console.log(newSymptoms.length + "233");
         if (newSymptoms.length == 0) {
           const conditionWithSymptom = await fastify.prisma.condition.findMany({
             include: { symptoms: true, treatment: true },
@@ -72,25 +74,26 @@ module.exports = async function (fastify, opts) {
           var minLength =
             conditionWithSymptom[0].symptoms.length > session.symptoms.length
               ? conditionWithSymptom[0].symptoms.filter(
-                ({ id: id1 }) => !session.symptoms.some(({ id: id2 }) => id2 === id1)
-              )
+                  ({ id: id1 }) =>
+                    !session.symptoms.some(({ id: id2 }) => id2 === id1)
+                )
               : session.symptoms.filter(
-                ({ id: id1 }) =>
-                  !conditionWithSymptom[0].symptoms.some(
-                    ({ id: id2 }) => id2 === id1
-                  )
-              );
+                  ({ id: id1 }) =>
+                    !conditionWithSymptom[0].symptoms.some(
+                      ({ id: id2 }) => id2 === id1
+                    )
+                );
           conditionWithSymptom.map(async (item) => {
             var results =
               item.symptoms.length > session.symptoms.length
                 ? item.symptoms.filter(
-                  ({ id: id1 }) =>
-                    !session.symptoms.some(({ id: id2 }) => id2 === id1)
-                )
+                    ({ id: id1 }) =>
+                      !session.symptoms.some(({ id: id2 }) => id2 === id1)
+                  )
                 : session.symptoms.filter(
-                  ({ id: id1 }) =>
-                    !item.symptoms.some(({ id: id2 }) => id2 === id1)
-                );
+                    ({ id: id1 }) =>
+                      !item.symptoms.some(({ id: id2 }) => id2 === id1)
+                  );
             if (results.length < minLength.length) {
               minLength = results;
               min = item;
@@ -103,7 +106,6 @@ module.exports = async function (fastify, opts) {
           });
           question = newSymptoms[0];
         }
-
       } else {
         const conditions = await fastify.prisma.symptom.findMany({
           where: { id: session.symptoms[session.symptoms.length - 1].id },
@@ -135,25 +137,26 @@ module.exports = async function (fastify, opts) {
           var minLength =
             conditionWithSymptom[0].symptoms.length > session.symptoms.length
               ? conditionWithSymptom[0].symptoms.filter(
-                ({ id: id1 }) => !session.symptoms.some(({ id: id2 }) => id2 === id1)
-              )
+                  ({ id: id1 }) =>
+                    !session.symptoms.some(({ id: id2 }) => id2 === id1)
+                )
               : session.symptoms.filter(
-                ({ id: id1 }) =>
-                  !conditionWithSymptom[0].symptoms.some(
-                    ({ id: id2 }) => id2 === id1
-                  )
-              );
+                  ({ id: id1 }) =>
+                    !conditionWithSymptom[0].symptoms.some(
+                      ({ id: id2 }) => id2 === id1
+                    )
+                );
           conditionWithSymptom.map(async (item) => {
             var results =
               item.symptoms.length > session.symptoms.length
                 ? item.symptoms.filter(
-                  ({ id: id1 }) =>
-                    !session.symptoms.some(({ id: id2 }) => id2 === id1)
-                )
+                    ({ id: id1 }) =>
+                      !session.symptoms.some(({ id: id2 }) => id2 === id1)
+                  )
                 : session.symptoms.filter(
-                  ({ id: id1 }) =>
-                    !item.symptoms.some(({ id: id2 }) => id2 === id1)
-                );
+                    ({ id: id1 }) =>
+                      !item.symptoms.some(({ id: id2 }) => id2 === id1)
+                  );
             if (results.length < minLength.length) {
               minLength = results;
               min = item;

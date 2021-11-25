@@ -17,6 +17,9 @@ module.exports = async function (fastify, opts) {
         where: {
           category: request.params.cat,
         },
+        include: {
+          treatment: true,
+        },
       });
       return getCondition;
     } catch (err) {
