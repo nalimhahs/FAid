@@ -171,7 +171,7 @@ module.exports = async function (fastify, opts) {
         }
       }
 
-      reply.send({ session_id: session.id, question: question });
+      reply.send({ session_id: session.id, symptom: question });
     } catch (error) {
       console.error(error);
       reply.send({ error: "Invalid Severity" });
