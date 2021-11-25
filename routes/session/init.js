@@ -14,9 +14,6 @@ module.exports = async function (fastify, opts) {
         orderBy: {
           priority: "asc",
         },
-        select: {
-          question: true,
-        },
       });
       reply.send({ session_id: session.id, question: firstQuestion[0] });
     } catch (error) {
